@@ -41,6 +41,7 @@ def test_login_page():
     registration_page = Registration_Page(driver)
     login_page.load(url)
     login_page.verify_page_title("Swimlane")
+    login_page.enter_username_password("anil.kumar", "JobPassword123!@#")
     registration_page.verify_login_success()
     print("Done TC#2")
 
@@ -70,7 +71,19 @@ def test_create_new_record():
     print("Done TC#4")
 
 
+def test_invalid_login():
+    driver = webdriver.Chrome(
+        executable_path=path)
+    login_page = Login_Page(driver)
+    registration_page = Registration_Page(driver)
+    login_page.load(url)
+    login_page.verify_page_title("Swimlane")
+    login_page.verify_invalid_login("anil.kumar")
+    print("Done TC#5")
+
+
 test_create_new_record()
 test_login_url()
 test_login_page()
 test_registration_error_message()
+test_invalid_login()

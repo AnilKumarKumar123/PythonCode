@@ -9,8 +9,6 @@ class Login_Page:
     login_button = (By.XPATH, "//span[text()='Login']")
     login_text = "//button[text() = 'Continue Anyway']"
 
-    URL = 'https://qa-practical.qa.swimlane.io/'
-
     def __init__(self, browser):
         self.browser = browser
 
@@ -38,3 +36,13 @@ class Login_Page:
         self.browser.find_element_by_xpath("//input[@id='input-1']").send_keys(username)
         self.browser.find_element_by_xpath("//input[@id='input-2']").send_keys(password)
         self.browser.find_element_by_xpath("//span[text()='Login']").click()
+
+    def verify_invalid_login(self, username):
+        """ Enter username and password """
+        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, "//input[@id='input-1']")))
+        self.browser.find_element_by_xpath("//input[@id='input-1']").send_keys(username)
+        self.browser.find_element_by_xpath("//span[text()='Login']").click()
+        WebDriverWait(self.browser, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Login failed.']")))
+        login_error_text = self.browser.find_element_by_xpath("//div[text()='Login failed.']").text
+        assert login_error_text == "Login failed."
+
