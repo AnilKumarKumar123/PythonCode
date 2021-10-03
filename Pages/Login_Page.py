@@ -4,10 +4,11 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Login_Page:
-    user_name = "//input[@id='input-1]"
-    password = (By.XPATH, "//input[@id='input-2']")
-    login_button = (By.XPATH, "//span[text()='Login']")
+    user_name = "//input[@id='input-1']"
+    password = "//input[@id='input-2']"
+    login_button = "//span[text()='Login']"
     login_text = "//button[text() = 'Continue Anyway']"
+    login_error_message = " // div[text() = 'Login failed.']"
 
     def __init__(self, browser):
         self.browser = browser
@@ -16,14 +17,10 @@ class Login_Page:
         delay = 10  # seconds
         self.browser.maximize_window()
         self.browser.get(url)
-        WebDriverWait(self.browser, delay).until(EC.invisibility_of_element((By.XPATH, "//button[text() = 'Continue "
-                                                                                       "Anyway']")))
-
-        WebDriverWait(self.browser, delay).until(EC.presence_of_element_located((By.XPATH, "//button[text() = "
-                                                                                           "'Continue Anyway']")))
-        self.browser.find_element_by_xpath("//button[text() = 'Continue Anyway']").click()
-        WebDriverWait(self.browser, delay).until(EC.invisibility_of_element((By.XPATH, "//button[text() = 'Continue "
-                                                                                       "Anyway']")))
+        WebDriverWait(self.browser, delay).until(EC.invisibility_of_element((By.XPATH, self.login_text)))
+        WebDriverWait(self.browser, delay).until(EC.presence_of_element_located((By.XPATH, self.login_text)))
+        self.browser.find_element_by_xpath(self.login_text).click()
+        WebDriverWait(self.browser, delay).until(EC.invisibility_of_element((By.XPATH, self.login_text)))
 
     def verify_page_title(self, applicationurltext):
         """ Check if the test passed or failed """
@@ -32,17 +29,37 @@ class Login_Page:
 
     def enter_username_password(self, username, password):
         """ Enter username and password """
-        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, "//input[@id='input-1']")))
-        self.browser.find_element_by_xpath("//input[@id='input-1']").send_keys(username)
-        self.browser.find_element_by_xpath("//input[@id='input-2']").send_keys(password)
-        self.browser.find_element_by_xpath("//span[text()='Login']").click()
+        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, self.user_name)))
+        self.browser.find_element_by_xpath(self.user_name).send_keys(username)
+        self.browser.find_element_by_xpath(self.password).send_keys(password)
+        self.browser.find_element_by_xpath(self.login_button).click()
 
     def verify_invalid_login(self, username):
         """ Enter username and password """
-        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, "//input[@id='input-1']")))
-        self.browser.find_element_by_xpath("//input[@id='input-1']").send_keys(username)
-        self.browser.find_element_by_xpath("//span[text()='Login']").click()
-        WebDriverWait(self.browser, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Login failed.']")))
-        login_error_text = self.browser.find_element_by_xpath("//div[text()='Login failed.']").text
+        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, self.user_name)))
+        self.browser.find_element_by_xpath(self.user_name).send_keys(username)
+        self.browser.find_element_by_xpath(self.login_button).click()
+        WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.XPATH, self.login_error_message)))
+        login_error_text = self.browser.find_element_by_xpath(self.login_error_message).text
         assert login_error_text == "Login failed."
+
+    def enter_user_name(self, username):
+        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, self.user_name)))
+        self.browser.find_element_by_xpath(self.user_name).send_keys(username)
+
+    def enter_password(self,password):
+        WebDriverWait(self.browser, 8).until(EC.visibility_of_element_located((By.XPATH, self.user_name)))
+        self.browser.find_element_by_xpath(self.password).send_keys(password)
+
+    def click_submit_button(self):
+        self.browser.find_element_by_xpath(self.login_button).click()
+
+    def validate_error_message(self):
+        WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.XPATH, self.login_error_message)))
+        login_error_text = self.browser.find_element_by_xpath(self.login_error_message).text
+        assert login_error_text == "Login failed."
+
+
 
